@@ -1,8 +1,9 @@
-import React, {Component} from "react";
-import {View, Image, TouchableOpacity, Text, StyleSheet, Platform} from "react-native";
+import React, { Component } from "react";
+import { View, Image, TouchableOpacity, Text, StyleSheet, Platform, Dimensions } from "react-native";
 
 // Constants
 import DEFAULT_AVATAR from "./assets/images/no_avatar.png";
+const { width, height } = Dimensions.get('window');
 
 // Components
 class StoryCircleListItem extends Component {
@@ -15,22 +16,22 @@ class StoryCircleListItem extends Component {
 
     // Component Functions
     _handleItemPress = item => {
-        const {handleStoryItemPress} = this.props;
+        const { handleStoryItemPress } = this.props;
 
         if (handleStoryItemPress) handleStoryItemPress(item);
 
-        this.setState({isPressed: true});
+        this.setState({ isPressed: true });
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.item.seen != this.props.item.seen) {
-            this.setState({isPressed: this.props.item.seen});
+            this.setState({ isPressed: this.props.item.seen });
         }
     }
 
     render() {
-        const {item, unPressedBorderColor, pressedBorderColor, avatarSize} = this.props;
-        const {isPressed} = this.state;
+        const { item, unPressedBorderColor, pressedBorderColor, avatarSize } = this.props;
+        const { isPressed } = this.state;
         return (
             <View style={styles.container}>
                 <TouchableOpacity
@@ -59,8 +60,10 @@ class StoryCircleListItem extends Component {
                             height: avatarSize ?? 60,
                             width: avatarSize ?? 60,
                             borderRadius: 100,
+                            borderWidth: 3,
+                            borderColor: '#121212'
                         }}
-                        source={{uri: item.user_image}}
+                        source={{ uri: item.user_image }}
                         defaultSource={Platform.OS === 'ios' ? DEFAULT_AVATAR : null}
                     />
                 </TouchableOpacity>
@@ -74,8 +77,9 @@ export default StoryCircleListItem;
 const
     styles = StyleSheet.create({
         container: {
-            marginVertical: 5,
-            marginHorizontal: 8
+            // marginVertical: 5,
+            // marginHorizontal: 5,
+            marginRight: 10
         },
         unPressedAvatar: {
             borderColor: 'red'
