@@ -344,7 +344,8 @@ const styles = StyleSheet.create({
         borderRadius: 100
     },
     avatarText: {
-        fontWeight: 'bold',
+        fontSize: 16,
+        lineHeight: 21.94,
         color: 'white',
         paddingLeft: 10,
     },
