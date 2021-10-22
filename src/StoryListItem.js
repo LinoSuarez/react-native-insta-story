@@ -16,6 +16,8 @@ import type {IUserStoryItem} from "./interfaces/IUserStory";
 import {usePrevious} from "./helpers/StateHelpers";
 import {isNullOrWhitespace} from "./helpers/ValidationHelpers";
 import GestureRecognizer from 'react-native-swipe-gestures';
+import Download from '../../../images/download.svg'
+import Share from '../../../images/share.svg'
 
 const {width, height} = Dimensions.get('window');
 
@@ -189,25 +191,31 @@ export const StoryListItem = (props: Props) => {
                         );
                     })}
                 </View>
-                <View style={styles.userContainer}>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Image style={styles.avatarImage}
-                               source={{uri: props.profileImage}}
-                        />
-                        <Text style={styles.avatarText}>{props.profileName}</Text>
-                    </View>
-                    <TouchableOpacity onPress={() => {
-                        if (props.onClosePress) {
-                            props.onClosePress();
-                        }
-                    }}>
-                        <View style={styles.closeIconContainer}>
-                            {props.customCloseComponent ?
-                                props.customCloseComponent :
-                                <Text style={{color: 'white'}}>X</Text>
-                            }
+                <View style={styles.userSection}>
+                    <View style={styles.userContainer}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Image style={styles.avatarImage}
+                                source={{uri: props.profileImage}}
+                            />
+                            <Text style={styles.avatarText}>{props.profileName}</Text>
                         </View>
-                    </TouchableOpacity>
+                        <View style={styles.storyOptions}>
+                            <TouchableOpacity style={{marginRight:20}}><Download/></TouchableOpacity>
+                            <TouchableOpacity><Share/></TouchableOpacity>
+                        </View>
+                        {/* <TouchableOpacity onPress={() => {
+                            if (props.onClosePress) {
+                                props.onClosePress();
+                            }
+                        }}>
+                            <View style={styles.closeIconContainer}>
+                                {props.customCloseComponent ?
+                                    props.customCloseComponent :
+                                    <Text style={{color: 'white'}}>X</Text>
+                                }
+                            </View>
+                        </TouchableOpacity> */}
+                    </View>
                 </View>
                 <View style={styles.pressContainer}>
                     <TouchableWithoutFeedback
@@ -240,7 +248,7 @@ export const StoryListItem = (props: Props) => {
                     </TouchableWithoutFeedback>
                 </View>
             </View>
-            {content[current].onPress &&
+            {/* {content[current].onPress &&
             <TouchableOpacity activeOpacity={1}
                               onPress={onSwipeUp}
                               style={styles.swipeUpBtn}>
@@ -251,7 +259,7 @@ export const StoryListItem = (props: Props) => {
                         <Text style={{color: 'white', marginTop: 5}}>{props.swipeText ?? 'Swipe Up'}</Text>
                     </>
                 }
-            </TouchableOpacity>}
+            </TouchableOpacity>} */}
         </GestureRecognizer>
     )
 }
@@ -303,11 +311,32 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(117, 117, 117, 0.5)',
         marginHorizontal: 2,
     },
+    userSection:{
+        backgroundColor:'#rgba(85, 85, 85, .40)',
+        position: 'absolute',
+        right: 0,
+        left: 0,
+        // alignItems: 'center',
+        bottom: 0,
+        paddingTop: Platform.OS == 'ios' ? 20 : 50,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        // opacity: 0.3
+    },
     userContainer: {
+        // position:'absolute',
+        // bottom:0,
         height: 50,
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 15,
+        paddingBottom: Platform.OS == 'ios' ? 20 : 50
+    },
+    storyOptions:{
+        flexDirection:'row',
+        // justifyContent: 'center',
+        alignSelf:'center',
+        marginRight:20
     },
     avatarImage: {
         height: 30,
@@ -327,7 +356,8 @@ const styles = StyleSheet.create({
     },
     pressContainer: {
         flex: 1,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginBottom: Platform.OS == 'ios' ? 70 : 100,
     },
     swipeUpBtn: {
         position: 'absolute',
