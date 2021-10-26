@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import {
     Animated,
     Image,
@@ -18,6 +18,9 @@ import {isNullOrWhitespace} from "./helpers/ValidationHelpers";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Download from '../../../images/download.svg'
 import Share from '../../../images/share.svg'
+import { MainContext } from '../../../context/main.context';
+import colors from '../../../styles/colors';
+import PremiumContainer from '../../../container/premium.container';
 
 const {width, height} = Dimensions.get('window');
 
@@ -37,6 +40,8 @@ type Props = {
 
 export const StoryListItem = (props: Props) => {
     const stories = props.stories;
+    const { isPremium } = useContext(MainContext);
+    const [premiumVisible, setPremiumVisible] = useState(false);
 
     const [load, setLoad] = useState(true);
     const [pressed, setPressed] = useState(false);
@@ -64,6 +69,16 @@ export const StoryListItem = (props: Props) => {
             start();
         }
     }, [props.currentPage]);
+
+    continueStory = (value) => {
+        if (value) {
+            startAnimation();
+            setPressed(false);
+        }else{
+            progress.stopAnimation();
+            setPressed(true);
+        }
+    }
 
     const prevCurrent = usePrevious(current);
 
@@ -157,6 +172,10 @@ export const StoryListItem = (props: Props) => {
     }
 
     return (
+        <React.Fragment>
+            <View style={{position:'absolute'}}>
+                <PremiumContainer premiumVisible={premiumVisible} setPremiumVisible={setPremiumVisible} continueStory={continueStory} />
+            </View>
         <GestureRecognizer
             onSwipeUp={(state) => onSwipeUp(state)}
             onSwipeDown={(state) => onSwipeDown(state)}
@@ -200,8 +219,28 @@ export const StoryListItem = (props: Props) => {
                             <Text style={styles.avatarText}>{props.profileName}</Text>
                         </View>
                         <View style={styles.storyOptions}>
-                            <TouchableOpacity style={{marginRight:20}}><Download/></TouchableOpacity>
-                            <TouchableOpacity><Share/></TouchableOpacity>
+                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : null}  style={{marginRight:20, alignItems:'center'}}
+                                onPressIn={() => progress.stopAnimation()}
+                                onLongPress={() => setPressed(true)}
+                            >
+                                <Download/>
+                                {!isPremium?
+                                    <View style={{backgroundColor: colors.vipBtn, paddingHorizontal: 7, marginTop: 5, borderRadius: 20}} >
+                                        <Text style={styles.vipBtn}>VIP</Text>
+                                    </View>
+                                : null}
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : null} style={{alignItems:'center'}}
+                                onPressIn={() => progress.stopAnimation()}
+                                onLongPress={() => setPressed(true)}
+                            >
+                                <Share/>
+                                {!isPremium? 
+                                    <View style={{backgroundColor: colors.vipBtn, paddingHorizontal: 7, marginTop: 5, borderRadius: 20}} >
+                                        <Text style={styles.vipBtn}>VIP</Text>
+                                    </View>
+                                : null}
+                            </TouchableOpacity>
                         </View>
                         {/* <TouchableOpacity onPress={() => {
                             if (props.onClosePress) {
@@ -261,6 +300,7 @@ export const StoryListItem = (props: Props) => {
                 }
             </TouchableOpacity>} */}
         </GestureRecognizer>
+        </React.Fragment>
     )
 }
 
@@ -344,6 +384,7 @@ const styles = StyleSheet.create({
         borderRadius: 100
     },
     avatarText: {
+        // fontWeight: 'bold',
         fontSize: 16,
         lineHeight: 21.94,
         color: 'white',
@@ -366,5 +407,12 @@ const styles = StyleSheet.create({
         left: 0,
         alignItems: 'center',
         bottom: Platform.OS == 'ios' ? 20 : 50
-    }
+    },
+    vipBtn:{
+        fontSize: 9,
+        fontWeight: '700',
+        lineHeight: 11,
+        letterSpacing: 0,
+
+    },
 });
