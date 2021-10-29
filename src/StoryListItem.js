@@ -9,7 +9,9 @@ import {
     TouchableWithoutFeedback,
     ActivityIndicator,
     View,
-    Platform
+    Platform,
+    Share,
+    Linking
 } from "react-native";
 import {initialWindowSafeAreaInsets} from "react-native-safe-area-context";
 import type {IUserStoryItem} from "./interfaces/IUserStory";
@@ -17,7 +19,7 @@ import {usePrevious} from "./helpers/StateHelpers";
 import {isNullOrWhitespace} from "./helpers/ValidationHelpers";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Download from '../../../images/download.svg'
-import Share from '../../../images/share.svg'
+import ShareSvg from '../../../images/share.svg'
 import { MainContext } from '../../../context/main.context';
 import colors from '../../../styles/colors';
 import PremiumContainer from '../../../container/premium.container';
@@ -171,6 +173,32 @@ export const StoryListItem = (props: Props) => {
         }
     }
 
+    const onShare = async (story_image) => {
+        try {
+          const result = await Share.share({
+            url:
+              story_image,
+          });
+          if (result.action === Share.sharedAction) {
+            if (result.activityType) {
+              // shared with activity type of result.activityType
+            } else {
+              // shared
+            }
+          } else if (result.action === Share.dismissedAction) {
+            // dismissed
+          }
+        } catch (error) {
+          alert(error.message);
+        }
+    }
+
+    const downloadStory = async (story_image) => {
+        console.log(story_image)
+        await Linking.openURL(story_image);
+    }
+    
+
     return (
         <React.Fragment>
             <View style={{position:'absolute'}}>
@@ -219,7 +247,7 @@ export const StoryListItem = (props: Props) => {
                             <Text style={styles.avatarText}>{props.profileName}</Text>
                         </View>
                         <View style={styles.storyOptions}>
-                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : null}  style={{marginRight:20, alignItems:'center'}}
+                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : downloadStory(props.stories[0].story_image)}  style={{marginRight:20, alignItems:'center'}}
                                 onPressIn={() => progress.stopAnimation()}
                                 onLongPress={() => setPressed(true)}
                             >
@@ -230,11 +258,12 @@ export const StoryListItem = (props: Props) => {
                                     </View>
                                 : null}
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : null} style={{alignItems:'center'}}
-                                onPressIn={() => progress.stopAnimation()}
-                                onLongPress={() => setPressed(true)}
+                            <TouchableOpacity style={{alignItems:'center'}} onPress={() => !isPremium?  
+                                [ setPremiumVisible(true), progress.stopAnimation(), setPressed(true)
+                                ]: onShare(props.stories[0].story_image)
+                                } 
                             >
-                                <Share/>
+                                <ShareSvg/>
                                 {!isPremium? 
                                     <View style={{backgroundColor: colors.vipBtn, paddingHorizontal: 7, marginTop: 5, borderRadius: 20}} >
                                         <Text style={styles.vipBtn}>VIP</Text>
