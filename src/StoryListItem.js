@@ -23,6 +23,8 @@ import ShareSvg from '../../../images/share.svg'
 import { MainContext } from '../../../context/main.context';
 import colors from '../../../styles/colors';
 import PremiumContainer from '../../../container/premium.container';
+import CameraRoll from "@react-native-community/cameraroll";
+import RNFetchBlob from 'rn-fetch-blob'
 
 const {width, height} = Dimensions.get('window');
 
@@ -197,7 +199,34 @@ export const StoryListItem = (props: Props) => {
         console.log(story_image)
         await Linking.openURL(story_image);
     }
+
+    const saveToCameraRoll = (REMOTE_IMAGE_PATH) => {
+        let url = REMOTE_IMAGE_PATH;
+        if (Platform.OS === 'android') {
+            ToastAndroid.show("Image is Saving...", ToastAndroid.SHORT)
+            RNFetchBlob
+                .config({
+                    fileCache: true,
+                    appendExt: 'jpg'
+                })
+                .fetch('GET', url)
+                .then((res) => {
+                    console.log()
+                    CameraRoll.save(res.path())
     
+                        .then((res) => {
+                            console.log("save", res)
+                            ToastAndroid.show("Image saved Successfully.", ToastAndroid.SHORT)
+                        }).catch((error) => {
+                            ToastAndroid.show("Ops! Operation Failed", ToastAndroid.SHORT)
+    
+                        })
+                })
+        } else {
+            CameraRoll.save(url)
+                .then(alert('Success', 'Photo added to camera roll!'))
+        }
+    }    
 
     return (
         <React.Fragment>
@@ -247,7 +276,7 @@ export const StoryListItem = (props: Props) => {
                             <Text style={styles.avatarText}>{props.profileName}</Text>
                         </View>
                         <View style={styles.storyOptions}>
-                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : downloadStory(props.stories[0].story_image)}  style={{marginRight:20, alignItems:'center'}}
+                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : saveToCameraRoll(props.stories[0].story_image)}  style={{marginRight:20, alignItems:'center'}}
                                 onPressIn={() => progress.stopAnimation()}
                                 onLongPress={() => setPressed(true)}
                             >

@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import { View, Image, TouchableOpacity, Text, StyleSheet, Platform, Dimensions } from "react-native";
+import { View, Image, TouchableOpacity, StyleSheet, Platform } from "react-native";
 
 // Constants
 import DEFAULT_AVATAR from "./assets/images/no_avatar.png";
-const { width, height } = Dimensions.get('window');
 
 // Components
 class StoryCircleListItem extends Component {
@@ -77,8 +76,6 @@ export default StoryCircleListItem;
 const
     styles = StyleSheet.create({
         container: {
-            // marginVertical: 5,
-            // marginHorizontal: 5,
             marginRight: 10
         },
         unPressedAvatar: {
