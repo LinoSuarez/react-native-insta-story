@@ -176,23 +176,23 @@ export const StoryListItem = (props: Props) => {
     }
 
     const onShare = async (story_image) => {
-        try {
-          const result = await Share.share({
-            url:
-              story_image,
-          });
-          if (result.action === Share.sharedAction) {
-            if (result.activityType) {
-              // shared with activity type of result.activityType
-            } else {
-              // shared
-            }
-          } else if (result.action === Share.dismissedAction) {
-            // dismissed
-          }
-        } catch (error) {
-          alert(error.message);
-        }
+        RNFetchBlob.config({
+            fileCache: true
+        })
+        .fetch("GET", story_image)
+        // the image is now dowloaded to device's storage
+        .then(resp => {
+            // the image path you can use it directly with Image component
+            imagePath = resp.path();
+            return resp.readFile("base64");
+        })
+        .then(async base64Data => {
+            var base64Data = `data:image/png;base64,` + base64Data;
+            // here's base64 encoded image
+            await Share.share({ url: base64Data });
+            // remove the file from storage
+            return fs.unlink(imagePath);
+        }).catch( err => console.log(err));
     }
 
     const downloadStory = async (story_image) => {
@@ -276,7 +276,7 @@ export const StoryListItem = (props: Props) => {
                             <Text style={styles.avatarText}>{props.profileName}</Text>
                         </View>
                         <View style={styles.storyOptions}>
-                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : saveToCameraRoll(props.stories[0].story_image)}  style={{marginRight:20, alignItems:'center'}}
+                            <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : saveToCameraRoll(content[current].image)}  style={{marginRight:20, alignItems:'center'}}
                                 onPressIn={() => progress.stopAnimation()}
                                 onLongPress={() => setPressed(true)}
                             >
