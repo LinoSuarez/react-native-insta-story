@@ -25,6 +25,7 @@ import colors from '../../../styles/colors';
 import PremiumContainer from '../../../container/premium.container';
 import CameraRoll from "@react-native-community/cameraroll";
 import RNFetchBlob from 'rn-fetch-blob'
+import Video from 'react-native-video';
 
 const {width, height} = Dimensions.get('window');
 
@@ -53,6 +54,7 @@ export const StoryListItem = (props: Props) => {
         stories.map((x) => {
             return {
                 image: x.story_image,
+                media_type: x.media_type,
                 onPress: x.onPress,
                 finish: 0
             }
@@ -213,7 +215,6 @@ export const StoryListItem = (props: Props) => {
                 .then((res) => {
                     console.log()
                     CameraRoll.save(res.path())
-    
                         .then((res) => {
                             console.log("save", res)
                             ToastAndroid.show("Image saved Successfully.", ToastAndroid.SHORT)
@@ -227,6 +228,23 @@ export const StoryListItem = (props: Props) => {
                 .then(alert('Success', 'Photo added to camera roll!'))
         }
     }    
+
+    const verifyMedia = (currentStory) => {
+            //make sure we remove any nasty GET params 
+            uri = currentStory.image.split('?')[0];
+            //moving on, split the uri into parts that had dots before them
+            var parts = uri.split('.');
+            //get the last part ( should be the extension )
+            var extension = parts[parts.length-1];
+            //define some image types to test against
+            var imageTypes = ['jpg','jpeg','tiff','png','gif','bmp'];
+            //check if the extension matches anything in the list.
+            if(imageTypes.indexOf(extension) !== -1 || currentStory.media_type == 'IMAGE') {
+                return true
+            }else{
+                return false
+            }
+    }
 
     return (
         <React.Fragment>
@@ -243,10 +261,24 @@ export const StoryListItem = (props: Props) => {
             }}
         >
             <View style={styles.backgroundContainer}>
+                { verifyMedia(content[current]) == true ?
                 <Image onLoadEnd={() => start()}
                        source={{uri: content[current].image}}
                        style={styles.image}
                 />
+                :
+                <Video onReadyForDisplay={() => start()} 
+                    source={{uri: content[current].image}}   // Can be a URL or a local file.
+                    ref={(ref) => {
+                        this.player = ref
+                    }}                                      // Store reference
+                    onBuffer={this.onBuffer}                // Callback when remote video is buffering
+                    onError={this.videoError}               // Callback when video cannot be loaded
+                    paused={pressed}
+                    resizeMode={"contain"}
+                    style={styles.backgroundVideo} />
+                    }
+
                 {load && <View style={styles.spinnerContainer}>
                     <ActivityIndicator size="large" color={'white'}/>
                 </View>}
@@ -275,7 +307,7 @@ export const StoryListItem = (props: Props) => {
                             />
                             <Text style={styles.avatarText}>{props.profileName}</Text>
                         </View>
-                        <View style={styles.storyOptions}>
+                        <View style={styles.storyOptions} >
                             <TouchableOpacity onPress={() => !isPremium?  setPremiumVisible(true) : saveToCameraRoll(content[current].image)}  style={{marginRight:20, alignItems:'center'}}
                                 onPressIn={() => progress.stopAnimation()}
                                 onLongPress={() => setPressed(true)}
@@ -416,7 +448,7 @@ const styles = StyleSheet.create({
         left: 0,
         // alignItems: 'center',
         bottom: 0,
-        paddingTop: Platform.OS == 'ios' ? 20 : 50,
+        paddingTop: 20,
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         // opacity: 0.3
@@ -428,7 +460,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 15,
-        paddingBottom: Platform.OS == 'ios' ? 20 : 50
+        paddingBottom: 20,
     },
     storyOptions:{
         flexDirection:'row',
@@ -471,6 +503,12 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         lineHeight: 11,
         letterSpacing: 0,
-
+    },
+    backgroundVideo: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
     },
 });
