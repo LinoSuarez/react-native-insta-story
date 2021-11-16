@@ -321,7 +321,7 @@ export const StoryListItem = (props: Props) => {
                             </TouchableOpacity>
                             <TouchableOpacity style={{alignItems:'center'}} onPress={() => !isPremium?  
                                 [ setPremiumVisible(true), progress.stopAnimation(), setPressed(true)
-                                ]: onShare(props.stories[0].story_image)
+                                ]: onShare(content[current].image)
                                 } 
                             >
                                 <ShareSvg/>
