@@ -103,7 +103,7 @@ class StoryCircleListItem extends Component {
               uri: item.user_image,
               priority: FastImage.priority.high,
             }}
-            resizeMode={FastImage.resizeMode.contain}
+            // resizeMode={FastImage.resizeMode.contain}
             // onLoadEnd={this.handleImgLoaded}
 
           />
