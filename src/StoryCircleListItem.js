@@ -33,7 +33,7 @@ class StoryCircleListItem extends Component {
     this.setState({ isPressed: true });
   };
 
-  handleImgLoaded = () => this.setState({ imageLoaded: true })
+  handleImgLoaded = () => this.setState({ imageLoaded: true });
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.item.seen != this.props.item.seen) {
@@ -77,22 +77,7 @@ class StoryCircleListItem extends Component {
             source={{ uri: item.user_image }}
             defaultSource={Platform.OS === "ios" ? DEFAULT_AVATAR : null}
           /> */}
-          {!this.state.isImgLoaded ? (
-            <FastImage
-              style={{
-                height: avatarSize ?? 60,
-                width: avatarSize ?? 60,
-                borderRadius: 100,
-                borderWidth: 3,
-                borderColor: "#121212",
-              }}
-              source={{
-                uri: item.user_image,
-                priority: FastImage.priority.normal,
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-          ) : (
+          {!this.state.isImgLoaded && (
             <FastImage
               style={{
                 height: avatarSize ?? 60,
@@ -103,9 +88,26 @@ class StoryCircleListItem extends Component {
               }}
               source={DEFAULT_AVATAR}
               resizeMode={FastImage.resizeMode.contain}
-              onLoadEnd={this.handleImgLoaded}
             />
           )}
+
+          <FastImage
+            style={{
+              height: avatarSize ?? 60,
+              width: avatarSize ?? 60,
+              borderRadius: 100,
+              borderWidth: 3,
+              borderColor: "#121212",
+            }}
+            source={{
+              uri: item.user_image,
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+            onLoadEnd={this.handleImgLoaded}
+
+          />
+
         </TouchableOpacity>
       </View>
     );
