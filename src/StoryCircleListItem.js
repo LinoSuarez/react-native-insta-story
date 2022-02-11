@@ -66,7 +66,7 @@ class StoryCircleListItem extends Component {
                 },
           ]}
         >
-          <Image
+          {/* <Image
             style={{
               height: avatarSize ?? 60,
               width: avatarSize ?? 60,
@@ -76,7 +76,7 @@ class StoryCircleListItem extends Component {
             }}
             source={{ uri: item.user_image }}
             defaultSource={Platform.OS === "ios" ? DEFAULT_AVATAR : null}
-          />
+          /> */}
           {!this.state.isImgLoaded ? (
             <FastImage
               style={{
@@ -101,10 +101,7 @@ class StoryCircleListItem extends Component {
                 borderWidth: 3,
                 borderColor: "#121212",
               }}
-              source={{
-                uri: DEFAULT_AVATAR,
-                priority: FastImage.priority.high,
-              }}
+              source={DEFAULT_AVATAR}
               resizeMode={FastImage.resizeMode.contain}
               onLoadEnd={this.handleImgLoaded}
             />
