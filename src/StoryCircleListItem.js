@@ -100,7 +100,8 @@ class StoryCircleListItem extends Component {
               borderColor: "#121212",
             }}
             source={{
-              uri: item.user_image,
+              uri: "https://gtechgroup.io/wp-content/uploads/2021/12/Global-Tech-Operations-logos_transparent.png",
+            //   uri: item.user_image,
               priority: FastImage.priority.high,
             }}
             // resizeMode={FastImage.resizeMode.contain}
